@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+  namespace: googoo-platform
+  labels:
+    app: api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      containers:
+        - name: api
+          image: googoo-api:0.1.0
+          ports:
+            - containerPort: 4000
+          env:
+            - name: DB_HOST
+              value: db
+            - name: DB_PORT
+              value: "5432"
+          envFrom:
+            - secretRef:
+                name: googoo-db-credentials
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api
+  namespace: googoo-platform
+spec:
+  selector:
+    app: api
+  ports:
+    - port: 4000
+      targetPort: 4000
+  type: ClusterIP

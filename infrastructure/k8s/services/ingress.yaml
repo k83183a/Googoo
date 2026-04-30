@@ -1,0 +1,29 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: googoo-ingress
+  namespace: googoo-platform
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - googoo.local
+      secretName: googoo-tls
+  rules:
+    - host: googoo.local
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: api
+                port:
+                  number: 4000
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web
+                port:
+                  number: 80

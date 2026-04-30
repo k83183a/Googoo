@@ -1,0 +1,43 @@
+version: '3.9'
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: uber_clone
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: example
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - googoo-net
+
+  api:
+    build: ./backend
+    ports:
+      - '4000:4000'
+    environment:
+      DB_HOST: db
+      DB_PORT: '5432'
+      POSTGRES_DB: uber_clone
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: example
+    depends_on:
+      - db
+    networks:
+      - googoo-net
+
+  web:
+    build: ./frontend
+    ports:
+      - '3000:80'
+    depends_on:
+      - api
+    networks:
+      - googoo-net
+
+volumes:
+  db-data:
+
+networks:
+  googoo-net:
+    driver: bridge
